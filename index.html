@@ -8,11 +8,11 @@
         /* CSS: 디자인 수정 및 레이아웃 설정 */
         :root {
             --primary: #2c3e50;
-            --secondary: #3498db;
+            --secondary: #e84393; /* 분홍색 테마에 어울리는 강조색 */
             --success: #27ae60;
             --error: #e74c3c;
-            /* 배경색을 연한 파란색(Light Blue)으로 변경 */
-            --background: #eef2ff; 
+            /* 배경색을 연한 분홍색(Light Pink)으로 변경 */
+            --background: #fff0f3; 
             --card-bg: #ffffff;
             --text-main: #333333;
             --text-light: #7f8c8d;
@@ -37,9 +37,9 @@
         .card {
             background: var(--card-bg);
             padding: 2.5rem;
-            /* 테두리를 30px로 더욱 둥글게 설정 */
             border-radius: 30px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            /* 그림자를 더 진하고 깊게 (Blur와 Alpha값 상향) */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
             text-align: center;
         }
 
@@ -48,7 +48,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
-            border-bottom: 2px solid #f0f0f0;
+            border-bottom: 2px solid #f9f9f9;
             padding-bottom: 1rem;
         }
 
@@ -88,7 +88,7 @@
             box-sizing: border-box;
             padding: 15px;
             margin-bottom: 1rem;
-            border: 2px solid #e0e0e0;
+            border: 2px solid #eee;
             border-radius: 15px;
             font-size: 1.1rem;
             text-align: center;
@@ -98,7 +98,7 @@
 
         input[type="text"]:focus {
             border-color: var(--secondary);
-            box-shadow: 0 0 8px rgba(52, 152, 219, 0.1);
+            box-shadow: 0 0 8px rgba(232, 67, 147, 0.1);
         }
 
         button {
@@ -147,7 +147,7 @@
         
         <div class="verse-container" id="verse-display"></div>
         
-        <input type="text" id="answer-input" placeholder="빈칸의 단어를 입력하세요" autocomplete="off">
+        <input type="text" id="answer-input" placeholder="정답 단어를 입력하세요" autocomplete="off">
         <button id="submit-btn" onclick="checkAnswer()">정답 확인</button>
         
         <div id="feedback"></div>
@@ -157,7 +157,7 @@
         <h1 class="result-title">Quiz Completed!</h1>
         <div class="verse-container" id="final-score-display"></div>
         <p id="result-message"></p>
-        <button onclick="resetQuiz()">다시 시작하기</button>
+        <button onclick="resetQuiz()">다시 도전하기</button>
     </div>
 </div>
 
@@ -222,7 +222,7 @@
         }
 
         document.getElementById('score-display').innerText = `Score: ${score} / ${quizData.length}`;
-        document.getElementById('submit-btn').innerText = '다음 문제로...';
+        document.getElementById('submit-btn').innerText = '다음으로 이동...';
 
         setTimeout(() => {
             currentIdx++;
@@ -241,9 +241,9 @@
 
         const messageEl = document.getElementById('result-message');
         if (score === quizData.length) {
-            messageEl.innerText = "완벽합니다! 모든 구절을 마스터하셨네요. 🌟";
+            messageEl.innerText = "놀라운 실력입니다! 모든 구절을 암기하셨군요. 💖";
         } else {
-            messageEl.innerText = "수고하셨습니다! 다시 한 번 도전해보세요. 📖";
+            messageEl.innerText = "멋진 시도였습니다! 계속해서 성경 구절을 익혀보세요. ✨";
         }
     }
 
