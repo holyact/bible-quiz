@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bible Verse Quiz</title>
+    <style>
+        /* CSS: 디자인 및 레이아웃 */
+        :root {
+            --primary-color: #4a90e2;
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .quiz-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .verse-container {
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-size: 1.2rem;
+            min-height: 80px;
+        }
+
+        .blank {
+            border-bottom: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: bold;
+            padding: 0 5px;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 12px;
+            margin-bottom: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #357abd;
+        }
+
+        #feedback {
+            margin-top: 1.5rem;
+            font-weight: bold;
+            height: 24px;
+        }
+
+        .correct { color: var(--success-color); }
+        .incorrect { color: var(--error-color); }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="quiz-card" id="quiz-card">
+        <h1 id="reference">Bible Quiz</h1>
+        <div class="verse-container" id="verse-display">
+            <!-- 질문이 여기에 표시됩니다 -->
+        </div>
+        
+        <input type="text" id="answer-input" placeholder="빈칸에 들어갈 단어를 입력하세요" autocomplete="off">
+        <br>
+        <button onclick="checkAnswer()">정답 확인</button>
+        
+        <div id="feedback"></div>
+    </div>
+
+    <!-- 모든 문제를 다 풀었을 때 나타나는 결과 화면 -->
+    <div class="quiz-card hidden" id="result-card">
+        <h1>축하합니다!</h1>
+        <p>모든 문제를 완료했습니다.</p>
+        <button onclick="resetQuiz()">다시 시작하기</button>
+    </div>
+</div>
+
+<script>
+    /* JavaScript: 데이터 및 로직 */
+
+    // 1. 문제 데이터 구성
+    const quizData = [
+        {
+            verse: "In the ________ God created the heavens and the earth.",
+            answer: "beginning",
+            ref: "Genesis 1:1"
+        },
+        {
+            verse: "I am the way and the truth and the ____.",
+            answer: "life",
+            ref: "John 14:6"
+        },
+        {
+            verse: "I can do all things through him who gives me ________.",
+            answer: "strength",
+            ref: "Philippians 4:13"
+        }
+    ];
+
+    let currentIdx = 0;
+
+    // 2. 문제 렌더링 함수
+    function loadQuiz() {
+        const currentQuiz = quizData[currentIdx];
+        document.getElementById('reference').innerText = currentQuiz.ref;
+        document.getElementById('verse-display').innerHTML = currentQuiz.verse.replace('________', '<span class="blank">______</span>');
+        document.getElementById('answer-input').value = '';
+        document.getElementById('feedback').innerText = '';
+    }
+
+    // 3. 정답 확인 함수
+    function checkAnswer() {
+        const input = document.getElementById('answer-input').value.trim().toLowerCase();
+        const correctAnswer = quizData[currentIdx].answer.toLowerCase();
+        const feedback = document.getElementById('feedback');
+
+        if (input === correctAnswer) {
+            feedback.innerText = "정답입니다! 🎉";
+            feedback.className = "correct";
+            
+            // 1.5초 후 다음 문제로 이동
+            setTimeout(() => {
+                currentIdx++;
+                if (currentIdx < quizData.length) {
+                    loadQuiz();
+                } else {
+                    showResult();
+                }
+            }, 1500);
+        } else {
+            feedback.innerText = "다시 시도해 보세요. 🧐";
+            feedback.className = "incorrect";
+        }
+    }
+
+    // 4. 결과 화면 표시
+    function showResult() {
+        document.getElementById('quiz-card').classList.add('hidden');
+        document.getElementById('result-card').classList.remove('hidden');
+    }
+
+    // 5. 퀴즈 초기화
+    function resetQuiz() {
+        currentIdx = 0;
+        document.getElementById('quiz-card').classList.remove('hidden');
+        document.getElementById('result-card').classList.add('hidden');
+        loadQuiz();
+    }
+
+    // 엔터키 지원
+    document.getElementById('answer-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            checkAnswer();
+        }
+    });
+
+    // 앱 시작 시 첫 번째 문제 로드
+    loadQuiz();
+</script>
+
+</body>
+</html>
