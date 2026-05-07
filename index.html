@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>English Bible Verse Quiz</title>
     <style>
-        /* CSS: 세련된 디자인 및 레이아웃 설정 */
+        /* CSS: 디자인 수정 및 레이아웃 설정 */
         :root {
             --primary: #2c3e50;
             --secondary: #3498db;
             --success: #27ae60;
             --error: #e74c3c;
-            --background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            /* 배경색을 연한 파란색(Light Blue)으로 변경 */
+            --background: #eef2ff; 
             --card-bg: #ffffff;
             --text-main: #333333;
             --text-light: #7f8c8d;
@@ -19,7 +20,7 @@
 
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
-            background: var(--background);
+            background-color: var(--background);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -36,12 +37,12 @@
         .card {
             background: var(--card-bg);
             padding: 2.5rem;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            /* 테두리를 30px로 더욱 둥글게 설정 */
+            border-radius: 30px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
             text-align: center;
         }
 
-        /* 상단 정보 영역 (출처 및 점수) */
         .header-info {
             display: flex;
             justify-content: space-between;
@@ -67,7 +68,6 @@
             font-weight: bold;
         }
 
-        /* 퀴즈 문제 영역 */
         .verse-container {
             margin-bottom: 2rem;
             line-height: 1.8;
@@ -83,14 +83,13 @@
             padding: 0 10px;
         }
 
-        /* 입력 폼 및 버튼 */
         input[type="text"] {
             width: 100%;
             box-sizing: border-box;
             padding: 15px;
             margin-bottom: 1rem;
             border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            border-radius: 15px;
             font-size: 1.1rem;
             text-align: center;
             outline: none;
@@ -99,12 +98,7 @@
 
         input[type="text"]:focus {
             border-color: var(--secondary);
-            box-shadow: 0 0 8px rgba(52, 152, 219, 0.2);
-        }
-
-        input[type="text"]:disabled {
-            background-color: #f9f9f9;
-            color: var(--text-light);
+            box-shadow: 0 0 8px rgba(52, 152, 219, 0.1);
         }
 
         button {
@@ -112,7 +106,7 @@
             color: white;
             border: none;
             padding: 15px 30px;
-            border-radius: 10px;
+            border-radius: 15px;
             font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
@@ -135,33 +129,23 @@
         .incorrect { color: var(--error); }
         .hidden { display: none !important; }
 
-        /* 결과 화면 특화 스타일 */
         .result-title {
             font-size: 2rem;
             color: var(--primary);
             margin-bottom: 1rem;
-        }
-
-        .result-message {
-            font-size: 1.2rem;
-            color: var(--text-light);
-            margin-bottom: 2rem;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- 퀴즈 진행 화면 -->
     <div class="card" id="quiz-card">
         <div class="header-info">
-            <h2 class="reference-title" id="reference">영어 성경 공부</h2>
+            <h2 class="reference-title" id="reference">Bible Quiz</h2>
             <div class="score-badge" id="score-display">Score: 0 / 3</div>
         </div>
         
-        <div class="verse-container" id="verse-display">
-            <!-- 질문 표시 영역 -->
-        </div>
+        <div class="verse-container" id="verse-display"></div>
         
         <input type="text" id="answer-input" placeholder="빈칸의 단어를 입력하세요" autocomplete="off">
         <button id="submit-btn" onclick="checkAnswer()">정답 확인</button>
@@ -169,23 +153,15 @@
         <div id="feedback"></div>
     </div>
 
-    <!-- 퀴즈 결과 화면 -->
     <div class="card hidden" id="result-card">
         <h1 class="result-title">Quiz Completed!</h1>
-        <div class="verse-container" id="final-score-display">
-            <!-- 최종 점수 표시 영역 -->
-        </div>
-        <p class="result-message" id="result-message">
-            <!-- 결과 메시지 표시 영역 -->
-        </p>
-        <button onclick="resetQuiz()">처음부터 다시 시작</button>
+        <div class="verse-container" id="final-score-display"></div>
+        <p id="result-message"></p>
+        <button onclick="resetQuiz()">다시 시작하기</button>
     </div>
 </div>
 
 <script>
-    /* JavaScript: 데이터 및 논리 제어 */
-
-    // 1. 문제 데이터
     const quizData = [
         {
             verse: "In the ________ God created the heavens and the earth.",
@@ -204,22 +180,18 @@
         }
     ];
 
-    // 상태 변수
     let currentIdx = 0;
     let score = 0;
-    let isAnswered = false; // 중복 제출 방지용
+    let isAnswered = false;
 
-    // 2. 문제 화면 렌더링
     function loadQuiz() {
         isAnswered = false;
         const currentQuiz = quizData[currentIdx];
         
-        // UI 업데이트
         document.getElementById('reference').innerText = currentQuiz.ref;
         document.getElementById('score-display').innerText = `Score: ${score} / ${quizData.length}`;
         document.getElementById('verse-display').innerHTML = currentQuiz.verse.replace('________', '<span class="blank">________</span>').replace('____', '<span class="blank">____</span>');
         
-        // 입력 폼 초기화
         const inputField = document.getElementById('answer-input');
         inputField.value = '';
         inputField.disabled = false;
@@ -229,9 +201,8 @@
         document.getElementById('submit-btn').innerText = '정답 확인';
     }
 
-    // 3. 정답 확인 및 점수 계산 로직
     function checkAnswer() {
-        if (isAnswered) return; // 이미 제출한 경우 무시
+        if (isAnswered) return;
         isAnswered = true;
 
         const inputField = document.getElementById('answer-input');
@@ -239,7 +210,7 @@
         const correctAnswer = quizData[currentIdx].answer.toLowerCase();
         const feedback = document.getElementById('feedback');
 
-        inputField.disabled = true; // 입력창 비활성화
+        inputField.disabled = true;
 
         if (inputVal === correctAnswer) {
             score++;
@@ -250,11 +221,9 @@
             feedback.className = "incorrect";
         }
 
-        // 점수 즉시 업데이트
         document.getElementById('score-display').innerText = `Score: ${score} / ${quizData.length}`;
+        document.getElementById('submit-btn').innerText = '다음 문제로...';
 
-        // 2초 대기 후 다음 문제 또는 결과 화면으로 이동
-        document.getElementById('submit-btn').innerText = '다음으로 이동 중...';
         setTimeout(() => {
             currentIdx++;
             if (currentIdx < quizData.length) {
@@ -265,25 +234,19 @@
         }, 2000);
     }
 
-    // 4. 최종 결과 화면 표시 로직
     function showResult() {
         document.getElementById('quiz-card').classList.add('hidden');
         document.getElementById('result-card').classList.remove('hidden');
-
         document.getElementById('final-score-display').innerText = `최종 점수: ${score} / ${quizData.length}`;
 
-        // 점수에 따른 맞춤형 메시지 출력
         const messageEl = document.getElementById('result-message');
         if (score === quizData.length) {
-            messageEl.innerText = "완벽합니다! 성경 구절을 아주 잘 알고 계시네요. 🌟";
-        } else if (score >= quizData.length - 1) {
-            messageEl.innerText = "훌륭합니다! 거의 다 맞히셨습니다. 👍";
+            messageEl.innerText = "완벽합니다! 모든 구절을 마스터하셨네요. 🌟";
         } else {
-            messageEl.innerText = "좋은 시도였습니다! 다시 도전해서 완벽하게 외워보세요. 📖";
+            messageEl.innerText = "수고하셨습니다! 다시 한 번 도전해보세요. 📖";
         }
     }
 
-    // 5. 퀴즈 초기화 로직
     function resetQuiz() {
         currentIdx = 0;
         score = 0;
@@ -292,14 +255,10 @@
         loadQuiz();
     }
 
-    // 키보드 엔터키 입력 지원
-    document.getElementById('answer-input').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            checkAnswer();
-        }
+    document.getElementById('answer-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') checkAnswer();
     });
 
-    // 앱 실행 시 첫 번째 문제 로드
     loadQuiz();
 </script>
 
